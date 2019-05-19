@@ -1,4 +1,4 @@
 # Election
 Meek STV program
 
-This is an implementation of the Meek Single Transferable Vote voting system. Using a tighter threshold than the Droop Quota
+This is an implementation of the Meek Single Transferable Vote voting system. It uses a tighter Quota than the Droop Quota that can be set. Also comes with changeable accuracy and precision.
