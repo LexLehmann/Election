@@ -233,22 +233,30 @@ class Tree:
         list = []
         if cur != 0:
             if cur.left != 0:
-                self.inOrder(cur.left)
+                left = self.inOrder(cur.left)
+                for item in left:
+                    list.append(item)
             list.append(cur.vote)
             if cur.right != 0:
-                self.inOrder(cur.right)
+                right = self.inOrder(cur.right)
+                for item in right:
+                    list.append(item)
         return list
 
     def inOrderTakePart(self, cur, amount):
         list = []
         if cur.left != 0:
-            self.inOrderTakePart(cur.left, amount)
+            left = self.inOrderTakePart(cur.left, amount)
+            for item in left:
+                list.append(item)
         sendBack = cur.vote.makeCopy()
         sendBack.cutWeight(amount)
         cur.vote.setWeight(cur.vote.getWeight() - sendBack.getWeight())
         list.append(sendBack)
         if cur.right != 0:
-            self.inOrderTakePart(cur.right, amount)
+            right = self.inOrderTakePart(cur.right, amount)
+            for item in right:
+                list.append(item)
         return list
 
 
@@ -275,7 +283,9 @@ class Candidate:
         self.accepting = 0
         self.count = 0
 
+
     def getPart(self, amount):
+        self.cutAccepting((self.count-amount)/self.count)
         self.count = self.count - amount
         return self.partyVoters.inOrderTakePart(self.partyVoters.getRoot(), amount/(self.count + amount))
 
@@ -290,3 +300,6 @@ class Candidate:
 
     def setAccp(self, val):
         self.accepting = val
+
+    def cutAccepting(self, amount):
+        self.accepting = self.accepting * amount
