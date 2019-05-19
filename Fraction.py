@@ -12,9 +12,9 @@ class Fraction:
     def __float__(self):
         return self.numer/self.denom
 
-    def __int__(self):
-        self.simplify()
-        return self.numer
+#    def __int__(self):
+#        self.simplify()
+#        return self.numer
 
     def __floor__(self):
         self.numer = self.number - (self.numer%self.denom)
@@ -34,10 +34,14 @@ class Fraction:
             self.numer = self.numer*-1
             self.denom = self.denom*-1
         val = Fraction(self.numer//num2, self.denom//num2)
-        return val.simplfyToTrillion()
+        return val.simplfyToPrecision()
 
-    def simplfyToTrillion(self):
-        precision = 10000000000000
+    ## Prevents the Fractional  values from blowing up too large
+    ## precision can be changed to provide a more precise answer
+    # has the advantage that it will keep same level of precision
+    # regardless of how large the numbers get, unlike floating points
+    def simplfyToPrecision(self):
+        precision = 10000000000000000
         if self.denom > precision:
             numer = (self.numer * precision) // self.denom
             denom = precision
