@@ -20,6 +20,7 @@ class Fraction:
         self.numer = self.number - (self.numer%self.denom)
         return(Fraction(self.numer, self.denom))
 
+    #if it is possible makes the fraction simpiler by using the euler modulus method
     def simplify(self):
         num1 = self.numer
         num2 = self.denom
@@ -61,6 +62,7 @@ class Fraction:
             self.denom = denom//num2
         return Fraction(self.numer, self.denom)
 
+    #this and rsub are subtraction
     def __sub__(self, other):
         numer = self.numer
         denom = self.denom
@@ -100,6 +102,7 @@ class Fraction:
         val = val.simplify()
         return val
 
+    #addition
     def __add__(self, other):
         numer = self.numer
         denom = self.denom
@@ -139,6 +142,7 @@ class Fraction:
         val = val.simplify()
         return val
 
+    #multiplication
     def __mul__(self, other):
         if isinstance(other, Fraction):
             numer = self.numer*other.numer
@@ -159,6 +163,7 @@ class Fraction:
         val = val.simplify()
         return val
 
+    #division
     def __truediv__(self, other):
         if isinstance(other, Fraction):
             numer = self.numer * other.denom
@@ -179,6 +184,7 @@ class Fraction:
         val = val.simplify()
         return val
 
+    #all rest are comparators that work with ints and Fractions
     def __eq__(self, other):
         if isinstance(other, Fraction):
             return self.numer*other.denom == other.numer*self.denom
@@ -195,7 +201,7 @@ class Fraction:
         if isinstance(other, Fraction):
             return self.numer * other.denom < other.numer * self.denom
         elif isinstance(other, int):
-            return float(self) < other
+            return self.numer < other * self.denom
         else:
             return False
 
@@ -206,7 +212,7 @@ class Fraction:
         if isinstance(other, Fraction):
             return self.numer * other.denom > other.numer * self.denom
         elif isinstance(other, int):
-            return float(self) > other
+            return self.numer > other* self.denom
         else:
             return False
 
