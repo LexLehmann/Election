@@ -1,6 +1,9 @@
 from Fraction import Fraction
 
+#the class that holds a vote and the choices the vote made and
+# hw much power this vote has
 class Vote:
+    #Vote initializer if no weight sent sets it to 1
     def __init__(self, voteData, w = None):
         self.list = voteData
         if w != None:
@@ -8,22 +11,30 @@ class Vote:
         else:
             self.weight = Fraction(1,1)
 
+    #returns the vote's choices
     def getList(self):
         return self.list
 
+    #adds the second votes weight to the current's weight
+    #this should only happen when votes' choices are identical
     def __add__(self, other):
         self.weight += other.weight
         return self
 
+    #returns the weight of this vote
     def getWeight(self):
         return self.weight
 
+    #gives a vote a total weight
     def setWeight(self, val):
         self.weight = val
 
+    #given a fraction this multiplies the vote value by that fraction
+    #used for taking a part from a vote
     def cutWeight(self, amount):
         self.weight = self.weight * amount
 
+    #given a choice in the vote it removes that choice from the vote
     def removeChoice(self, toRemove):
         for rank in self.list:
             for choice in rank:
@@ -32,6 +43,9 @@ class Vote:
                     if len(rank) == 0:
                         self.list.pop(rank)
 
+    #returns a copy of the current vote.
+    #needed when votes split into parts that can
+    #have choices removed in different orders
     def makeCopy(self):
         copyList = []
         for rank in self.list:
@@ -41,8 +55,7 @@ class Vote:
             copyList.append(copyRank)
         return Vote(copyList, self.weight)
 
-
-
+    #gives the sense if two votes have the same chioices
     def __eq__(self, other):
         returnVal = True
         i = 0
@@ -61,6 +74,13 @@ class Vote:
                 i += 1
         return returnVal
 
+    #Gives a concept of order to  the votes to allow
+    #binary searching
+    #first gives order based on the length of the vote
+    #then on each set of ranks it first checks length, then
+    #if a larger vote comes first
+    #since votes will be added such that each rank is sorted
+    # this will never make mistakes
     def __lt__(self, other):
         returnVal = False
 
@@ -91,8 +111,10 @@ class Vote:
                 i += 1
         return returnVal
 
-
+# A node for the tree has a vote as the data and other data
+# to make the tree work
 class Node:
+    #defines a node everything that needs to be changed is changed in the tree
     def __init__(self, Vote):
         self.vote = Vote
         self.parent = 0
@@ -100,13 +122,22 @@ class Node:
         self.right = 0
         self.avl = 0
 
+#the tree that holds the votes so that if a vote is a copy can be
+# quickly determined
 class Tree:
+    #tree starts non existant
     def __init__(self):
         self.root = 0
 
+    #returns root of the tree. Will return 0 if the tree doesn't have any nodes
     def getRoot(self):
         return self.root
 
+    #given a vote it adds it to the tree
+    #if the tree is empty makes the root node for the vote
+    #if an idenical vote is already in the tree it combines their power
+    #otherwise puts the vote in the correct spot and makes a node for it
+    #then it rebalances the tree using the avl method
     def insert(self, vote):
         if self.root == 0:
             newRoot = Node(vote)
@@ -158,6 +189,7 @@ class Tree:
                     prev = cur
                     cur = cur.parent
 
+    #roates the tree to the right moving top down to the right
     def rightRot(self, top):
         par = top
         v = top.left
@@ -173,6 +205,7 @@ class Tree:
         if self.root == par:
             self.root = v
 
+    #roates the tree to the left moving top down to the left
     def leftRot(self, top):
         par = top
         v = top.right
@@ -188,6 +221,7 @@ class Tree:
         if self.root == par:
             self.root = v
 
+    #handles the other rotates
     def leftRightRot(self, top):
         case = 0
         if top.left.right.avl == -1:
@@ -229,6 +263,7 @@ class Tree:
         elif case == 3:
             top.parent.right.avl = -1
 
+    #returns an inorder list of all of the votes from cur down
     def inOrder(self, cur):
         list = []
         if cur != 0:
@@ -243,6 +278,9 @@ class Tree:
                     list.append(item)
         return list
 
+    #returns an inorder list of all of the votes from cur down but the votes it returns
+    #are all the fraction amount that was passed in of the orginal vote.
+    #it also reduces the wieght of each vote by the amount it took out
     def inOrderTakePart(self, cur, amount):
         list = []
         if cur.left != 0:
@@ -259,18 +297,26 @@ class Tree:
                 list.append(item)
         return list
 
-
+#this holds the dara for each candidate
+#each candidate has a tree that holds all of their votes
+#an idenitfying number, a total votes so far and the amount they are accepting
+#accpeting will be 1 if they are still trying to win 0 if they have lost and inbetween if thay have won
 class Candidate:
+    #gives the candidate no votes and a 1 accepting along with a number
     def __init__(self, i):
         self.idenifier = i
         self.count = 0
         self.partyVoters = Tree()
         self.accepting = Fraction(1,1)
 
+    #given a voter it adds that vote to the candidates count
     def addNewVoter(self, vote):
         self.partyVoters.insert(vote)
         self.count += vote.weight
 
+    #cuts a candidate from the running makes them no longer accept votes
+    # and returns all of their voters to be redistributed
+    # also deletes their votes
     def removeCandidate(self):
         list = self.partyVoters.inOrder(self.partyVoters.getRoot())
         self.partyVoters = 0
@@ -278,12 +324,16 @@ class Candidate:
         self.count = 0
         return list
 
+    #the last removal. Since the election is ending these voters don't need
+    #to be returned and redistributed
+    #helps with votes that have run out of options breaking the distribution method
     def finalRemoval(self):
         self.partyVoters = 0
         self.accepting = 0
         self.count = 0
 
-
+    #takes a fraction, amount, from every voter in a candidate and returns them
+    #also cuts the amount they accept and their count by the same amount
     def getPart(self, amount):
         self.cutAccepting((self.count-amount)/self.count)
         self.count = self.count - amount
@@ -301,5 +351,6 @@ class Candidate:
     def setAccp(self, val):
         self.accepting = val
 
+    #cuts the current amount the candidate accepts by the passed in fraction
     def cutAccepting(self, amount):
         self.accepting = self.accepting * amount
