@@ -6,7 +6,8 @@ from Vote import Candidate
 ## Takes a vote and sends it to its next choice.
 # If there is a tie for first place it splits the vote into
 # several fraction of votes. then puts those votes in their
-# respective candidates
+# respective candidates. If the candidate has already won/lost
+# the amount they accept goes in and the rest moves on.
 def distributeNewVotes(voter):
     for vote in voter.getList()[0]:
         newVote = voter.makeCopy()
@@ -44,7 +45,8 @@ def removeLowest():
 ## Given a level to cut it down to, this will remove the fraction
 # needed to get the total count down to that amount from all of the votes
 # of all of the candidates over that amount. Then sends those fraction of
-# votes to their next choice
+# votes to their next choice. Also sets the amount that candidate will accept
+# of new votes
 def cutTop(threshold):
     toDistribute = []
     for person in candidates:
@@ -60,9 +62,10 @@ def cutTop(threshold):
 ## This is the main method that runs the election.
 # The seats variable is how you set how many options can win the election
 # additionalQuota is how much the threshold should be above the minimum amount
+#This is needed to be above 0 when there is no back and forth between two candidates
 def election():
-    seats = 5
-    additionalQuota = Fraction(0,1000)
+    seats = 3
+    additionalQuota = Fraction(1,1000)
     accuracy = Fraction(1,100)
     threshold = Fraction(len(votes), seats + 1) + additionalQuota
     candidatesLeft = len(candidates)
