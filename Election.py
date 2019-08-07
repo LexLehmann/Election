@@ -3,140 +3,124 @@ from Vote import Vote
 from Vote import Candidate
 ##from Vote import Tree
 
-## Takes a vote and sends it to its next choice.
-# If there is a tie for first place it splits the vote into
-# several fraction of votes. then puts those votes in their
-# respective candidates. If the candidate has already won/lost
-# the amount they accept goes in and the rest moves on.
-def distributeNewVotes(voter):
-    for vote in voter.getList()[0]:
-        newVote = voter.makeCopy()
-        divs = len(newVote.getList()[0])
-        newVote.getList()[0].pop(newVote.getList()[0].index(vote))
+class meek:
+    candidates = []
+    votes = []
+    output = []
 
-        if len(newVote.getList()[0]) == 0:
-            newVote.getList().pop(0)
+    ## Takes a vote and sends it to its next choice.
+    # If there is a tie for first place it splits the vote into
+    # several fraction of votes. then puts those votes in their
+    # respective candidates. If the candidate has already won/lost
+    # the amount they accept goes in and the rest moves on.
+    def distributeNewVotes(self, voter):
+        for vote in voter.getList()[0]:
+            newVote = voter.makeCopy()
+            divs = len(newVote.getList()[0])
+            newVote.getList()[0].pop(newVote.getList()[0].index(vote))
 
-        newVote.cutWeight(Fraction(1, divs))
+            if len(newVote.getList()[0]) == 0:
+                newVote.getList().pop(0)
 
-        if candidates[vote].getAccp() < 1:
-            nextIter = newVote.makeCopy()
-            newVote.cutWeight(candidates[vote].getAccp())
-            nextIter.setWeight(nextIter.getWeight()- newVote.getWeight())
-            distributeNewVotes(nextIter)
+            newVote.cutWeight(Fraction(1, divs))
 
-        if newVote.getWeight() > 0:
-            candidates[vote].addNewVoter(newVote)
+            if self.candidates[vote].getAccp() < 1:
+                nextIter = newVote.makeCopy()
+                newVote.cutWeight(self.candidates[vote].getAccp())
+                nextIter.setWeight(nextIter.getWeight()- newVote.getWeight())
+                self.distributeNewVotes(nextIter)
 
-## Removes the last place candidate from the running and
-# sends their votes to the next choice
-def removeLowest():
-    minVotes = -1
-    for person in candidates:
-        if (minVotes == -1 or person.getCount() < candidates[minVotes].getCount()) and person.getAccp() != 0:
-            minVotes = candidates.index(person)
+            if newVote.getWeight() > 0:
+                self.candidates[vote].addNewVoter(newVote)
 
-    toTransfer = candidates[minVotes].removeCandidate()
+    ## Removes the last place candidate from the running and
+    # sends their votes to the next choice
+    def removeLowest(self):
+        minVotes = -1
+        for person in self.candidates:
+            if (minVotes == -1 or person.getCount() < self.candidates[minVotes].getCount()) and person.getAccp() != 0:
+                minVotes = self.candidates.index(person)
 
-    for vote in toTransfer:
-        copy = vote.makeCopy()
-        distributeNewVotes(copy)
+        self.output.insert(0, minVotes)
 
-## Given a level to cut it down to, this will remove the fraction
-# needed to get the total count down to that amount from all of the votes
-# of all of the candidates over that amount. Then sends those fraction of
-# votes to their next choice. Also sets the amount that candidate will accept
-# of new votes
-def cutTop(threshold):
-    toDistribute = []
-    for person in candidates:
-        if person.getCount() > threshold:
-            amount = person.getCount() - threshold
-            toAdd = person.getPart(amount)
-            for item in toAdd:
-                toDistribute.append(item)
+        toTransfer = self.candidates[minVotes].removeCandidate()
 
-    for vote in toDistribute:
-        distributeNewVotes(vote)
+        for vote in toTransfer:
+            copy = vote.makeCopy()
+            self.distributeNewVotes(copy)
 
-## This is the main method that runs the election.
-# The seats variable is how you set how many options can win the election
-# additionalQuota is how much the threshold should be above the minimum amount
-#This is needed to be above 0 when there is no back and forth between two candidates
-def election():
-    seats = 3
-    additionalQuota = Fraction(1,1000)
-    accuracy = Fraction(1,100)
-    threshold = Fraction(len(votes), seats + 1) + additionalQuota
-    candidatesLeft = len(candidates)
+    ## Given a level to cut it down to, this will remove the fraction
+    # needed to get the total count down to that amount from all of the votes
+    # of all of the candidates over that amount. Then sends those fraction of
+    # votes to their next choice. Also sets the amount that candidate will accept
+    # of new votes
+    def cutTop(self, threshold):
+        toDistribute = []
+        for person in self.candidates:
+            if person.getCount() > threshold:
+                amount = person.getCount() - threshold
+                toAdd = person.getPart(amount)
+                for item in toAdd:
+                    toDistribute.append(item)
 
-    while candidatesLeft > seats + 1:
-        cutTopAgain = True
-        while cutTopAgain:
-            cutTopAgain = False
-            for person in candidates:
-                if person.getCount() > threshold + accuracy:
-                    cutTopAgain = True
-            if cutTopAgain:
-                cutTop(threshold)
+        for vote in toDistribute:
+            self.distributeNewVotes(vote)
 
-        removeLowest()
-        candidatesLeft -= 1
-        print("one down")
+    ## This is the main method that runs the election.
+    # The seats variable is how you set how many options can win the election
+    # additionalQuota is how much the threshold should be above the minimum amount
+    #This is needed to be above 0 when there is no back and forth between two candidates
+    def meekSTV(self):
+        seats = 1
+        additionalQuota = Fraction(1, 1000)
+        accuracy = Fraction(1, 100)
+        threshold = Fraction(len(self.votes), seats + 1) + additionalQuota
+        candidatesLeft = len(self.candidates)
 
-    lastRemoval = 0
-    for person in candidates:
-        if person.getAccp() > 0 and (lastRemoval == 0 or person.getCount() < lastRemoval.getCount()):
-            lastRemoval = person
+        while candidatesLeft > seats + 1:
+            cutTopAgain = True
+            while cutTopAgain:
+                cutTopAgain = False
+                for person in self.candidates:
+                    if person.getCount() > threshold + accuracy:
+                        cutTopAgain = True
+                if cutTopAgain:
+                    self.cutTop(threshold)
 
-    lastRemoval.finalRemoval()
+            self.removeLowest()
+            candidatesLeft -= 1
+#           print("one down")
+
+        lastRemoval = 0
+        for person in self.candidates:
+            if person.getAccp() > 0 and (lastRemoval == 0 or person.getCount() < lastRemoval.getCount()):
+                lastRemoval = person
+
+        self.output.insert(0, lastRemoval.getIdent())
+
+        lastRemoval.finalRemoval()
 
 
+    ## START ##
+    ## reads in a txt file with v lines of c integers
+    # where v is the number of voters and c is the number of candidates
+    # The lowest integer is considered the most preferred choice.
+    # Ties are allowed. All integers over 10000 will be considered a tie for last place
+    def run(self, input):
 
-## START ##
-## reads in a txt file with v lines of c integers
-# where v is the number of voters and c is the number of candidates
-# The lowest integer is considered the most preferred choice.
-# Ties are allowed. All integers over 10000 will be considered a tie for last place
-inputFile = open("votes.txt", "r")
-input = []
-for line in inputFile:
-    next = line.strip('\n').split(" ")
-    input.append(next)
+        self.votes = input
 
-i = 0
-candidates = []
-for vote in input[0]:
-    candidates.append(Candidate(i))
-    i += 1
-
-votes = []
-for voter in input:
-    thisRank = []
-    added = 0
-    previous = 0
-    while added < len(candidates):
-        minChoice = 10000
-        for vote in voter:
-            if int(vote) < minChoice and int(vote) > previous:
-                minChoice = int(vote)
-        tied = []
         i = 0
-        for vote in voter:
-            if int(vote) == minChoice:
-                tied.append(i)
-            i += 1
-        thisRank.append(tied)
-        previous = minChoice
-        added += len(tied)
-    thisVote = Vote(thisRank)
-    votes.append(thisVote)
+        for tie in input[0].list:
+            for option in tie:
+                self.candidates.append(Candidate(i))
+                i += 1
 
+        for rank in self.votes:
+            self.distributeNewVotes(rank)
 
-for rank in votes:
-    distributeNewVotes(rank)
+        self.meekSTV()
 
-election()
-
-for candidate in candidates:
-    print(candidate.getCount())
+        print(self.output)
+#       for candidate in self.candidates:
+#           print(candidate.getCount())
