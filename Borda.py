@@ -41,4 +41,4 @@ class Borda:
             candidates[maxPer].setCount(0)
             output.append(maxPer)
 
-        print(output)
+        print("Borda: " + str(output))
