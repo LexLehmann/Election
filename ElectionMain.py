@@ -2,6 +2,10 @@ from meekSTV import Meek
 from Borda import Borda
 from Vote import Vote
 from Copeland import Copeland
+from TournamentTable import TournamentTable
+from F1 import Formula1
+from Plurality import Plurality
+from Minimax import Minimax
 
 inputFile = open("votes.txt", "r")
 input = []
@@ -31,11 +35,23 @@ for voter in input:
     thisVote = Vote(thisRank)
     votes.append(thisVote)
 
+Pur = Plurality()
+Pur.run(votes)
+
 meek = Meek()
 meek.run(votes)
 
 borda = Borda()
 borda.run(votes)
 
+f1 = Formula1()
+f1.run(votes)
+
+TournamentTable = TournamentTable()
+table = TournamentTable.run(votes)
+
 cope = Copeland()
-cope.run(votes)
+cope.run(table)
+
+mm = Minimax()
+mm.run(votes)
