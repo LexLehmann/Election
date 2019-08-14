@@ -101,7 +101,7 @@ class Meek:
         top = 0
         val = 0
         for person in self.candidates:
-            if person.getCount() > top:
+            if person.getCount() >= top:
                 top = person.getCount()
                 val = person
         self.output.insert(0, val.getIdent())

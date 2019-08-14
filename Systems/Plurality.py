@@ -2,7 +2,7 @@ from Fraction import Fraction
 from Vote import Vote
 from Vote import Candidate
 
-class Borda:
+class Plurality:
 
     def run(self, input):
         votes = input
@@ -14,21 +14,22 @@ class Borda:
                 candidates.append(Candidate(i))
                 i += 1
 
-        firstVote = len(candidates) - 1
+        voteCounts = [1]
+        while (len(voteCounts) < len(candidates)):
+            voteCounts.append(0)
 
         for vote in votes:
-            curVote = firstVote
+            curVote = 0
             for tie in vote.getList():
                 toSplit = 0
                 for vote in tie:
-                    toSplit += curVote
-                    curVote -= 1
+                    toSplit += voteCounts[curVote]
+                    curVote += 1
 
-                amountGiven = Fraction(toSplit, len(tie))
+                amountGiven = toSplit / len(tie)
 
                 for vote in tie:
                     candidates[vote].addCount(amountGiven)
-
 
         output = []
         prev = 100000000000000
@@ -50,4 +51,4 @@ class Borda:
                     output[len(output)-1].append(maxPer)
             prev = max
 
-        print("Borda: " + str(output))
+        print("Plurality: " + str(output))
