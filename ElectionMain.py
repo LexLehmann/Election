@@ -6,6 +6,8 @@ from TournamentTable import TournamentTable
 from F1 import Formula1
 from Plurality import Plurality
 from Minimax import Minimax
+from Baldwin import Baldwin
+from Bucklin import Bucklin
 
 inputFile = open("votes.txt", "r")
 input = []
@@ -42,7 +44,7 @@ meek = Meek()
 meek.run(votes)
 
 borda = Borda()
-borda.run(votes)
+print("Borda: " + str(borda.run(votes)))
 
 f1 = Formula1()
 f1.run(votes)
@@ -55,3 +57,11 @@ cope.run(table)
 
 mm = Minimax()
 mm.run(votes)
+
+bucklin = Bucklin()
+print("Bucklin: " + str(bucklin.run(votes)))
+
+baldwin = Baldwin()
+print("Baldwin: " + str(baldwin.run(votes)))
+
+print(table)
