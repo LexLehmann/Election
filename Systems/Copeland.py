@@ -25,7 +25,7 @@ class Copeland:
                 if isinstance(sorted[i][0], int):
                     sorted[i][0] = [item[0], sorted[i][0]]
                 else:
-                    sorted[i][1].append(item[i])
+                    sorted[i][0].append(item[i])
             else:
                 sorted.insert(i, item)
 
