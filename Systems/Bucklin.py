@@ -33,22 +33,22 @@ class Bucklin:
             for person in candidates:
                 if person.getCount() >= majority and person.getAccp() == 1:
                     nextChoice = person.getIdent()
-                    person.setAccp(0)
                     majority = person.getCount()
 
             if nextChoice != -1:
                 output.append(nextChoice)
+                candidates[nextChoice].setAccp(0)
                      
             while(nextChoice != -1):
                 nextChoice = -1
-                majority = Fraction(len(votes), 2)
+                majority = len(votes)/2
                 for person in candidates:
                     if person.getCount() >= majority and person.getAccp() == 1:
                         nextChoice = person.getIdent()
-                        person.setAccp(0)
                         majority = person.getCount()
 
                 if nextChoice != -1:
                     output.append(nextChoice)
+                    candidates[nextChoice].setAccp(0)
 
         return output
