@@ -5,11 +5,21 @@ from Fraction import Fraction
 class Vote:
     #Vote initializer if no weight sent sets it to 1
     def __init__(self, voteData, w = None):
-        self.list = voteData
-        if w != None:
-            self.weight = w
+        if isinstance(voteData, list):
+            self.list = voteData
+            if w != None:
+                self.weight = w
+            else:
+                self.weight = Fraction(1,1)
         else:
-            self.weight = Fraction(1,1)
+            self.list = []
+            for tie in voteData.getList():
+                newTie = []
+                for item in tie:
+                    newTie.append(item)
+                self.list.append(newTie)
+            self.weight = voteData.weight
+
 
     #returns the vote's choices
     def getList(self):
@@ -309,6 +319,15 @@ class Candidate:
         self.partyVoters = Tree()
         self.accepting = Fraction(1,1)
 
+    def getIdent(self):
+        return self.idenifier
+
+    def addCount(self, val):
+        self.count += val
+
+    def setCount(self, val):
+        self.count = val
+
     #given a voter it adds that vote to the candidates count
     def addNewVoter(self, vote):
         self.partyVoters.insert(vote)
@@ -338,9 +357,6 @@ class Candidate:
         self.cutAccepting((self.count-amount)/self.count)
         self.count = self.count - amount
         return self.partyVoters.inOrderTakePart(self.partyVoters.getRoot(), amount/(self.count + amount))
-
-    def getI(self):
-        return self.idenifier
 
     def getAccp(self):
         return self.accepting
