@@ -5,6 +5,7 @@ from Copeland import Copeland
 from TournamentTable import TournamentTable
 from F1 import Formula1
 from Plurality import Plurality
+from Plurality import ReversePlurality
 from Minimax import Minimax
 from Baldwin import Baldwin
 from Bucklin import Bucklin
@@ -37,8 +38,8 @@ for voter in input:
     thisVote = Vote(thisRank)
     votes.append(thisVote)
 
-Pur = Plurality()
-Pur.run(votes)
+Plur = Plurality()
+print("Plurality: " + str(Plur.run(votes)))
 
 meek = Meek()
 meek.run(votes)
@@ -52,6 +53,9 @@ f1.run(votes)
 TournamentTable = TournamentTable()
 table = TournamentTable.run(votes)
 
+RPlur = ReversePlurality()
+print("Reverse Plurality: " + str(RPlur.run(votes)))
+
 cope = Copeland()
 cope.run(table)
 
@@ -63,5 +67,8 @@ print("Bucklin: " + str(bucklin.run(votes)))
 
 baldwin = Baldwin()
 print("Baldwin: " + str(baldwin.run(votes)))
+
+contingent = Contingent()
+print("Contingent: " + str(contingent.run(votes, table)))
 
 print(table)
