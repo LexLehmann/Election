@@ -27,7 +27,10 @@ class Baldwin:
 
 
     def run(self, input):
-        self.votes = input
+        self.votes = []
+
+        for vote in input:
+            self.votes.append(Vote(vote))
 
         i = 0
         candidates = []
