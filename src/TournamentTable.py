@@ -24,7 +24,7 @@ class TournamentTable:
         i = 1
         for person in candidates:
             j = i
-            while(j < len(candidates)):
+            while (j < len(candidates)):
                 count = 0
                 for vote in votes:
                     counted = False
@@ -39,12 +39,23 @@ class TournamentTable:
                                 count -= 1
                         k += 1
 
-                if count > 0:
-                    table[person.getIdent()][j] = 1
-                    table[j][person.getIdent()] = -1
-                elif count < 0:
-                    table[person.getIdent()][j] = -1
-                    table[j][person.getIdent()] = 1
+                table[person.getIdent()][j] = count
+                table[j][person.getIdent()] = -1 * count
                 j += 1
             i += 1
+
+        return table
+
+    def simplify(self, input):
+        table = []
+        for line in input:
+            row = []
+            for pair in line:
+                if pair > 0:
+                    row.append(1)
+                elif pair < 0:
+                    row.append(-1)
+                else:
+                    row.append(0)
+            table.append(row)
         return table
