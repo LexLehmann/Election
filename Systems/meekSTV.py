@@ -1,7 +1,6 @@
 from Fraction import Fraction
-from Vote import Vote
 from Vote import Candidate
-##from Vote import Tree
+from Vote import Vote
 
 class Meek:
     candidates = []
@@ -70,8 +69,8 @@ class Meek:
     # The seats variable is how you set how many options can win the election
     # additionalQuota is how much the threshold should be above the minimum amount
     #This is needed to be above 0 when there is no back and forth between two candidates
-    def meekSTV(self):
-        seats = 1
+    def meekSTV(self, numOfSeats):
+        seats = numOfSeats
         additionalQuota = Fraction(1, 1000)
         accuracy = Fraction(1, 100)
         threshold = Fraction(len(self.votes), seats + 1) + additionalQuota
@@ -91,22 +90,29 @@ class Meek:
             candidatesLeft -= 1
 #           print("one down")
 
-        lastRemoval = 0
+        lastRemoval = -1
         for person in self.candidates:
-            if person.getAccp() > 0 and (lastRemoval == 0 or person.getCount() < lastRemoval.getCount()):
+            if person.getAccp() > 0 and (lastRemoval == -1 or person.getCount() < lastRemoval.getCount()):
                 lastRemoval = person
 
         self.output.insert(0, lastRemoval.getIdent())
 
         top = 0
         val = 0
+        selected = []
         for person in self.candidates:
-            if person.getCount() >= top:
+            if person.getCount() >= top and person != lastRemoval:
                 top = person.getCount()
                 val = person
-        self.output.insert(0, val.getIdent())
+                selected.append(val.getIdent())
+                val.finalRemoval()
 
         lastRemoval.finalRemoval()
+
+        if len(selected) == 1:
+            self.output.insert(0, selected[0])
+        else:
+            self.output.insert(0, selected)
 
 
     ## START ##
@@ -114,9 +120,11 @@ class Meek:
     # where v is the number of voters and c is the number of candidates
     # The lowest integer is considered the most preferred choice.
     # Ties are allowed. All integers over 10000 will be considered a tie for last place
-    def run(self, input):
+    def run(self, input, seats):
 
-        self.votes = input
+        self.votes = []
+        for ballot in input:
+            self.votes.append(Vote(ballot))
 
         i = 0
         for tie in input[0].list:
@@ -127,8 +135,8 @@ class Meek:
         for rank in self.votes:
             self.distributeNewVotes(rank)
 
-        self.meekSTV()
+        self.meekSTV(seats)
 
-        print("Meek STV: " + str(self.output))
+        return self.output
 #       for candidate in self.candidates:
 #           print(candidate.getCount())

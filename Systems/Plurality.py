@@ -3,8 +3,28 @@ from Vote import Vote
 from Vote import Candidate
 
 class Plurality:
+    votes = []
 
-    def run(self, input):
+    def removeFirst(self, firstCandidate):
+        for vote in self.votes:
+            i = 0
+            while i < len(vote.getList()):
+                j = 0
+                rank = vote.getList()[i]
+                while j < len(rank):
+                    if rank[j] == firstCandidate:
+                        rank.remove(firstCandidate)
+                        j -= 1
+                        if len(rank) == 0:
+                            vote.getList().pop(i)
+                            i -= 1
+                    elif rank[j] > firstCandidate:
+                        rank[j] -= 1
+                    j += 1
+                i += 1
+
+
+    def run(self, input, validWinners = None):
         votes = input
 
         i = 0
@@ -22,14 +42,17 @@ class Plurality:
             curVote = 0
             for tie in vote.getList():
                 toSplit = 0
+                numOfTie = 0
                 for vote in tie:
-                    toSplit += voteCounts[curVote]
-                    curVote += 1
+                    if validWinners == None or vote in validWinners:
+                        toSplit += voteCounts[curVote]
+                        curVote += 1
+                        numOfTie += 1
 
-                amountGiven = toSplit / len(tie)
-
-                for vote in tie:
-                    candidates[vote].addCount(amountGiven)
+                if numOfTie > 0:
+                    amountGiven = Fraction(toSplit, len(tie))
+                    for vote in tie:
+                        candidates[vote].addCount(amountGiven)
 
         output = []
         prev = 100000000000000
@@ -53,8 +76,97 @@ class Plurality:
 
         return output
 
+    def runWithRemoval(self, input):
+        self.votes = []
+        key = []
+
+        for vote in input:
+            self.votes.append(Vote(vote))
+
+        i = 0
+        for tie in input[0].list:
+            for option in tie:
+                key.append(i)
+                i += 1
+
+        outcome = self.run(self.votes)
+        output = []
+
+        if (isinstance(outcome[0], int)):
+            self.removeFirst(outcome[0])
+            output.append(outcome[0])
+            for i in range(0, len(key)):
+                if i > outcome[0]:
+                    key[i] -= 1
+                elif i == outcome[0]:
+                    key[i] = -1
+
+        else:
+            for person in outcome[0]:
+                self.removeFirst(person)
+                for i in range(0, len(key)):
+                    if i > person:
+                        key[i] -= 1
+                    elif i == person:
+                        key[i] = -1
+            output.append(outcome[0])
+
+        while(len(outcome) > 1):
+            outcome = self.run(self.votes)
+
+            if (isinstance(outcome[0], int)):
+                self.removeFirst(outcome[0])
+                for i in range(0, len(key)):
+                    if (outcome[0] < key[i]):
+                        key[i] -= 1
+                    elif (outcome[0] == key[i]):
+                        key[i] = -1
+                        output.append(i)
+            else:
+                tie = []
+                for person in outcome[0]:
+                    for i in range(0, len(key)):
+                        if (person == key[i]):
+                            key[i] = -1
+                            tie.append(i)
+                for person in outcome[0]:
+                    for i in range(0, len(key)):
+                        if person < key[i]:
+                            key[i] -= 1
+                for person in outcome[0]:
+                    self.removeFirst(person)
+                output.append(tie)
+
+
+        for i in range(0, len(key)):
+            if key[i] != -1:
+                output.append(i)
+
+        return output
+
+
 
 class ReversePlurality:
+    votes = []
+
+    def removeFirst(self, firstCandidate):
+        for vote in self.votes:
+            i = 0
+            while i < len(vote.getList()):
+                j = 0
+                rank = vote.getList()[i]
+                while j < len(rank):
+                    if rank[j] == firstCandidate:
+                        rank.remove(firstCandidate)
+                        j -= 1
+                        if len(rank) == 0:
+                            vote.getList().pop(i)
+                            i -= 1
+                    elif rank[j] > firstCandidate:
+                        rank[j] -= 1
+                    j += 1
+                i += 1
+
 
     def run(self, input):
         votes = input
@@ -80,7 +192,7 @@ class ReversePlurality:
                     toSplit += voteCounts[curVote]
                     curVote += 1
 
-                amountGiven = toSplit / len(tie)
+                amountGiven = Fraction(toSplit, len(tie))
 
                 for vote in tie:
                     candidates[vote].addCount(amountGiven)
@@ -107,3 +219,70 @@ class ReversePlurality:
 
         return output
 
+    def runWithRemoval(self, input):
+        self.votes = []
+        key = []
+
+        for vote in input:
+            self.votes.append(Vote(vote))
+
+        i = 0
+        for tie in input[0].list:
+            for option in tie:
+                key.append(i)
+                i += 1
+
+        outcome = self.run(self.votes)
+        output = []
+
+        if (isinstance(outcome[0], int)):
+            self.removeFirst(outcome[0])
+            output.append(outcome[0])
+            for i in range(0, len(key)):
+                if i > outcome[0]:
+                    key[i] -= 1
+                elif i == outcome[0]:
+                    key[i] = -1
+
+        else:
+            for person in outcome[0]:
+                self.removeFirst(person)
+                for i in range(0, len(key)):
+                    if i > person:
+                        key[i] -= 1
+                    elif i == person:
+                        key[i] = -1
+            output.append(outcome[0])
+
+        while(len(outcome) > 1):
+            outcome = self.run(self.votes)
+
+            if (isinstance(outcome[0], int)):
+                self.removeFirst(outcome[0])
+                for i in range(0, len(key)):
+                    if (outcome[0] < key[i]):
+                        key[i] -= 1
+                    elif (outcome[0] == key[i]):
+                        key[i] = -1
+                        output.append(i)
+            else:
+                tie = []
+                for person in outcome[0]:
+                    for i in range(0, len(key)):
+                        if (person == key[i]):
+                            key[i] = -1
+                            tie.append(i)
+                for person in outcome[0]:
+                    for i in range(0, len(key)):
+                        if person < key[i]:
+                            key[i] -= 1
+                for person in outcome[0]:
+                    self.removeFirst(person)
+                output.append(tie)
+
+
+        for i in range(0, len(key)):
+            if key[i] != -1:
+                output.append(i)
+
+        return output
