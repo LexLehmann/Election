@@ -1,8 +1,8 @@
 from Vote import Vote
 
 class Input:
-    def read(self):
-        inputFile = open("votes.txt", "r")
+    def readMy(self):
+        inputFile = open("test.txt", "r")
         input = []
         for line in inputFile:
             next = line.strip('\n').split(" ")
@@ -31,3 +31,4 @@ class Input:
             votes.append(thisVote)
 
         return votes
+
