@@ -8,4 +8,4 @@ Also includes Borda, Copeland, Purality, Baldwin, Bucklin and Minimax.
 
 Each System also includes 2 verions of the ordering across all of the candidates. One that is from the concept that the voting system cares about extended into all of the candidates and one that removes the top candidate and runs the algorithm again.
 
-Also has some less serious voting systems like formula one and Reverse Plurality
+Also has some less serious voting systems like Formula One Scoring and Reverse Plurality
