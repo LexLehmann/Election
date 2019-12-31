@@ -1,4 +1,6 @@
 from Vote import Vote
+from STV import STV
+import random
 
 class Tests:
 
@@ -62,6 +64,50 @@ class Tests:
 
         return retVotes
 
+    def ReinforcingTest(self, votes, split):
+        groups = []
+        thisCopy = []
+        #Change system here and lower down
+        system = STV()
 
+        for i in range(0, split):
+            groups.append([])
+
+        for vote in votes:
+            thisCopy.append(Vote(vote))
+
+        for vote in thisCopy:
+            groups[random.randint(0, split - 1)].append(vote)
+
+        groupsOutcomes = []
+
+        for list in groups:
+            ## To change system also have to check this line and lower down
+            result = system.runWithRemoval(list)
+            if isinstance(result[0], int):
+                groupsOutcomes.append(result[0])
+            else:
+                groupsOutcomes.append(-1)
+
+        totalPairs = 0
+        totalMatches = 0
+        for i in range(0, len(groups)):
+            for j in range(0, len(groups)):
+                if i != j:
+                    if groupsOutcomes[i] == groupsOutcomes[j]:
+                        totalPairs += 1
+                        combinedList = []
+                        for vote in groups[i]:
+                            combinedList.append(vote)
+                        for vote in groups[j]:
+                            combinedList.append(vote)
+
+                        #This is the last line to change
+                        result = system.runWithRemoval(combinedList)
+                        if isinstance(result[0], int):
+                            if result[0] == groupsOutcomes[i]:
+                                totalMatches += 1
+        print("Number of same pairs : " + str(totalPairs))
+        print("Number that failed reinforcement : " + str(totalPairs- totalMatches))
 
 
