@@ -50,4 +50,4 @@ class Formula1:
                     output[len(output)-1].append(maxPer)
             prev = max
 
-        print("Formula 1: " + str(output))
+        return output

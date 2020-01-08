@@ -1,3 +1,4 @@
+from Coombs import Coombs
 from meekSTV import Meek
 from Borda import Borda
 from Input import Input
@@ -12,19 +13,21 @@ from Baldwin import Baldwin
 from Bucklin import Bucklin
 from Contingent import Contingent
 from STV import STV
-from Coombs import Coombs
 from Tests import Tests
 
 input = Input()
-votes = input.readMy()
+#votes = input.readMy()
+votes = input.readBallotImage(1)
 
-tests = Tests()
-tests.ReinforcingTest(votes, 10)
-
+#tests = Tests()
+#tests.ReinforcingTest(votes, 10)
 
 TournamentTable = TournamentTable()
+#print("First Table Done")
 pairTable = TournamentTable.run(votes)
+#print("Pair Table Done")
 tourtable = TournamentTable.simplify(pairTable)
+#print("Simple Table Done")
 del(TournamentTable)
 
 Plur = Plurality()
@@ -81,13 +84,13 @@ coombs = Coombs()
 print("Coombs with Removal :           "  + str(coombs.runWithRemoval(votes)))
 
 bucklin = Bucklin()
-print("Bucklin with 50% threshold:     " + str(bucklin.run(votes, 1)))
+print("Bucklin with 50% threshold:     " + str(bucklin.run(votes)))
 
 #print("---- requires number of seats ----")
 #seats = 2
 
-meek = Meek()
-print("Meek STV:                       " + str(meek.run(votes, 1)))
+#meek = Meek()
+#print("Meek STV:                       " + str(meek.run(votes, 1)))
 
 
 #bucklin = Bucklin()
